@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/styles.css">
+    <title>Pallete Color v2.0</title>
+</head>
+
+<body>
+    <div class="row">
+        <% for(let i=0; i < colors.length; i++) { %>
+            <div class="col-lg-2 col-md-4 item" style="background-color: <%= colors[i].color %>;">
+                <span>
+                    <%= colors[i].color %>
+                </span>
+                <% if (colors[i].locked) { %>
+                    <img src="/img/secured-lock.png" alt="lock">
+                    <% } else { %>
+                        <img src="/img/padlock-unlock.png" alt="lock">
+                        <% } %>
+                            <input type="hidden" name="color" value="<%= colors[i].color %>">
+            </div>
+            <% } %>
+    </div>
+
+    <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#saveModal">
+        Save pallete
+    </button>
+
+    <div class="modal fade" id="saveModal" tabindex="-1" aria-labelledby="saveModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="saveModalLabel">Pallete parameters</h1>
+                    <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="/" method="post">
+                        <div class="mb-3">
+                            <label for="namePallete" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="namePallete" name="name">
+                        </div>
+                        <button class="btn btn-primary btn-lg float-right" type="submit">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/script.js"></script>
+</body>
+
+</html>

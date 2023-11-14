@@ -1,0 +1,40 @@
+body {
+    overflow: hidden;
+}
+
+a {
+    text-decoration: none;
+    color: black;
+    padding: 0 !important;
+}
+
+a:hover {
+    text-decoration: none;
+    color: black;
+    cursor: default;
+}
+
+.item span {
+    font-size: 3rem;
+    font-weight: bold;
+}
+
+.item {
+    min-height: 1000px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+button[type="button"] {
+    position: absolute;
+    top: 5%;
+    left: 92%;
+}
+
+img {
+    height: 25px;
+    width: 25px;
+}
