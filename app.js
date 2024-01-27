@@ -26,10 +26,12 @@ const palleteSchema = new mongoose.Schema({
     colors: [itemSchema]
 })
 
+
 itemSchema.path("locked").default(false);
+palleteSchema.path("title").default("Untitled");
+
 
 const Item = mongoose.model("Item", itemSchema);
-const Pallete = mongoose.model("Pallete", palleteSchema);
 
 
 app.get("/", function (req, res) {
@@ -46,31 +48,10 @@ app.get("/", function (req, res) {
 
 app.post("/", function (req, res) {
     console.log(req.body.name);
-
     Item.find({}).then((items) => {
 
-        const palleteItem = new Pallete({
-            title: req.body.name,
-            colors: items
-        })
-
-        palleteItem.save();
     })
 
-    Pallete.find({}).then((items) => {
-        console.log(items);
-    })
-
-})
-
-app.get("/pallete/:palleteTitle", function (req, res) {
-    console.log(req.params.palleteTitle);
-    Pallete.findOne({ title: req.params.palleteTitle }).then((item) => {
-        if (item) {
-            console.log(item.colors);
-        }
-        res.render("index", { colors: item.colors });
-    })
 })
 
 app.get("/:color", function (req, res) {

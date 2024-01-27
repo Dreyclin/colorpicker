@@ -30,24 +30,55 @@
             <% } %>
     </div>
 
-    <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#saveModal">
-        Save pallete
+    <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#registerModal">
+        Sign up
     </button>
 
-    <div class="modal fade" id="saveModal" tabindex="-1" aria-labelledby="saveModalLabel" aria-hidden="true">
+    <button type="button" class="btn btn-primary btn-lg sign-in" data-bs-toggle="modal" data-bs-target="#loginModal">
+        Sign in
+    </button>
+
+
+    <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="saveModalLabel">Pallete parameters</h1>
+                    <h1 class="modal-title fs-5" id="registerModalLabel">Registration</h1>
                     <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="/" method="post">
+                    <form action="/register" method="post">
                         <div class="mb-3">
-                            <label for="namePallete" class="form-label">Name</label>
-                            <input type="text" class="form-control" id="namePallete" name="name">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="name" name="name">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="text" class="form-control" id="password" name="password">
                         </div>
-                        <button class="btn btn-primary btn-lg float-right" type="submit">Save</button>
+                        <button class="btn btn-primary btn-lg float-right" type="submit">Sign Up</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="loginModalLabel">Log in</h1>
+                    <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="/login" method="post">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="name" name="name">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="text" class="form-control" id="password" name="password">
+                        </div>
+                        <button class="btn btn-primary btn-lg float-right" type="submit">Log in</button>
                     </form>
                 </div>
             </div>
