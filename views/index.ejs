@@ -30,14 +30,28 @@
             <% } %>
     </div>
 
-    <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#registerModal">
-        Sign up
-    </button>
+    <% if(!isLogged) { %>
+        <h3 class="welcome">Welcome, Guest</h3>
+        <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#registerModal">
+            Sign up
+        </button>
+        <button type="button" class="btn btn-primary btn-lg sign-in" data-bs-toggle="modal" data-bs-target="#loginModal">
+            Sign in
+        </button>
+    <% } %>
+    
+    <% if(isLogged) { %>
+        <h3 class="welcome">Welcome, <%= name %></h3>
+        <form action="/logout" method="post">
+            <button type="submit" class="btn btn-primary btn-lg logout">
+                Log Out
+            </button>
+        </form>
+    <% } %>
 
-    <button type="button" class="btn btn-primary btn-lg sign-in" data-bs-toggle="modal" data-bs-target="#loginModal">
-        Sign in
-    </button>
 
+
+        
 
     <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -52,7 +66,7 @@
                             <label for="name" class="form-label">Name</label>
                             <input type="text" class="form-control" id="name" name="name">
                             <label for="password" class="form-label">Password</label>
-                            <input type="text" class="form-control" id="password" name="password">
+                            <input type="password" class="form-control" id="password" name="password">
                         </div>
                         <button class="btn btn-primary btn-lg float-right" type="submit">Sign Up</button>
                     </form>
@@ -60,8 +74,6 @@
             </div>
         </div>
     </div>
-
-
 
     <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -76,7 +88,7 @@
                             <label for="name" class="form-label">Name</label>
                             <input type="text" class="form-control" id="name" name="name">
                             <label for="password" class="form-label">Password</label>
-                            <input type="text" class="form-control" id="password" name="password">
+                            <input type="password" class="form-control" id="password" name="password">
                         </div>
                         <button class="btn btn-primary btn-lg float-right" type="submit">Log in</button>
                     </form>

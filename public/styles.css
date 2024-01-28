@@ -30,7 +30,7 @@ a:hover {
 
 button[type="button"] {
     position: absolute;
-    top: 3%;
+    top: 4%;
     left: 92%;
 }
 
@@ -62,4 +62,18 @@ img {
 .pallete button {
     font-size: 2.5rem;
     font-weight: 900;
+}
+
+.welcome {
+    position: absolute;
+    top: 4%;
+    left: 40%;
+    font-weight: 900;
+    font-size: 3rem;
+}
+
+.logout {
+    position: absolute;
+    top: 5%;
+    left: 92%;
 }
