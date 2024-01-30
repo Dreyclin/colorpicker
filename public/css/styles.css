@@ -34,10 +34,6 @@ button[type="button"] {
     left: 92%;
 }
 
-.sign-in {
-    left: 86%!important;
-}
-
 img {
     height: 25px;
     width: 25px;
@@ -81,4 +77,9 @@ img {
 .centered {
     padding-top: 200px;
     text-align: center;
+}
+
+.auth-btn {
+    padding: 0.5rem!important;
+    margin-right: 0.5rem;
 }

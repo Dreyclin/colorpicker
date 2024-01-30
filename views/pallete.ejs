@@ -1,5 +1,5 @@
 <%- include('partials/header') %>
-    
+
     <div class="row">
         <% for(let i=0; i < colors.length; i++) { %>
             <div class="col-lg-2 col-md-4 item" style="background-color: <%= colors[i].color %>;">
@@ -16,23 +16,12 @@
             <% } %>
     </div>
 
-    <% if(!isLogged) { %>
-        <h3 class="welcome">Welcome, Guest</h3>
-        <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#registerModal">
-            Sign up
+    <h3 class="welcome">Welcome, <%= name %>
+    </h3>
+    <form action="/logout" method="post">
+        <button type="submit" class="btn btn-primary btn-lg logout">
+            Log Out
         </button>
-        <button type="button" class="btn btn-primary btn-lg sign-in" data-bs-toggle="modal" data-bs-target="#loginModal">
-            Sign in
-        </button>
-    <% } %>
-    
-    <% if(isLogged) { %>
-        <h3 class="welcome">Welcome, <%= name %></h3>
-        <form action="/logout" method="post">
-            <button type="submit" class="btn btn-primary btn-lg logout">
-                Log Out
-            </button>
-        </form>
-    <% } %>
+    </form>
 
-<%- include('partials/footer') %>
+    <%- include('partials/footer') %>

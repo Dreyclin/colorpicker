@@ -19,6 +19,9 @@ app.use(session({
     saveUninitialized: true,
 }))
 
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.set("view engine", "ejs");
 
 const lockedSrc = "img/secured-lock.png";
@@ -67,17 +70,88 @@ passport.use(User.createStrategy());
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-app.get("/", function(req, res) {
+app.get("/", function (req, res) {
     res.render("home");
 })
 
-app.get("/login", function(req, res) {
+app.get("/login", function (req, res) {
     res.render("login");
 })
 
-app.get("/register", function(req, res) {
+app.get("/register", function (req, res) {
     res.render("register");
 })
+
+app.post("/register", function (req, res) {
+    User.register({ username: req.body.username }, req.body.password, function (err, user) {
+        if (err) {
+            console.log(err);
+            res.redirect("/");
+        } else {
+            passport.authenticate("local")(req, res, function () {
+                res.redirect("/pallete");
+            })
+        }
+    })
+})
+
+app.post("/login", function (req, res) {
+    const user = new User({
+        username: req.body.username,
+        password: req.body.password
+    })
+
+    req.login(user, function (err) {
+        if (err) {
+            console.log(err);
+            res.redirect("/");  
+        } else {
+            passport.authenticate("local")(req, res, function () {
+                res.redirect("/pallete");
+            })
+        }
+    })
+})
+
+app.get("/pallete", function (req, res) {
+    console.log(req.user);
+    if (req.isAuthenticated()) {
+        User.findOne({ username: req.user.username }).then((user) => {
+            if (user.colors.length > 0) {
+                user.colors.forEach(color => {
+                    if (!color.locked) {
+                        color.color = randomColor();
+                    }
+                })
+                user.save();
+                res.render("pallete", { colors: user.colors, name: req.user.username });
+            } else {
+                for (let i = 0; i < colorsNum; i++) {
+                    user.colors.push({ color: randomColor(), locked: false });
+                }
+                user.save();
+                res.render("pallete", { colors: user.colors, isLogged: req.user, name: req.user.username })
+            }
+        })
+    } else {
+        res.redirect("/login");
+    }
+})
+
+// app.get("pallete/:color", function (req, res) {
+//     const colorParam = req.params.color;
+//     const isFaviconRequest = req.url.includes('favicon.ico');
+
+//     if (colorParam && !isFaviconRequest) {
+//         if (req.user) {
+//             User.findOne({ username: req.user.username }).then(user => {
+//                 let foundColor = user.colors.filter(color => { return color.color == "#" + req.params.color });
+//                 foundColor[0].locked = true;
+//                 user.save().then(() => { res.redirect("/") });
+//             })
+//         }
+//     }
+// })
 
 // app.get("/", function (req, res) {
 //     console.log(req.user);
@@ -113,27 +187,7 @@ app.get("/register", function(req, res) {
 
 // })
 
-// app.get("/:color", function (req, res) {
-//     const colorParam = req.params.color;
-//     const isFaviconRequest = req.url.includes('favicon.ico');
 
-//     if (colorParam && !isFaviconRequest) {
-//         if (req.user) {
-//             User.findOne({ username: req.user.username }).then(user => {
-//                 let foundColor = user.colors.filter(color => { return color.color == "#" + req.params.color });
-//                 foundColor[0].locked = true;
-//                 user.save().then(() => { res.redirect("/") });
-//             })
-//         } else {
-//             Item.findOne({ color: "#" + req.params.color }).then((item) => {
-//                 if (item) {
-//                     item.locked = !item.locked;
-//                     item.save().then(() => { res.redirect("/") });
-//                 }
-//             })
-//         }
-//     }
-// })
 
 // app.post("/register", function (req, res) {
 //     User.register({ username: req.body.name }, req.body.password, function (err, user) {
@@ -154,14 +208,14 @@ app.get("/register", function(req, res) {
 //     successRedirect: "/",
 //     failureRedirect: "/failure",
 // })
-    // User.findOne({ username: req.body.name }).then((user) => {
-    //     bcrypt.compare(req.body.password, user.password, function (err, result) {
-    //         if (result) {
-    //             currentUser = user.username;
-    //             res.redirect("/");
-    //         }
-    //     })
-    // })
+// User.findOne({ username: req.body.name }).then((user) => {
+//     bcrypt.compare(req.body.password, user.password, function (err, result) {
+//         if (result) {
+//             currentUser = user.username;
+//             res.redirect("/");
+//         }
+//     })
+// })
 
 
 // )
