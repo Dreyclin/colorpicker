@@ -148,20 +148,20 @@ app.get("/logout", function(req, res) {
     });
 })
 
-// app.get("pallete/:color", function (req, res) {
-//     const colorParam = req.params.color;
-//     const isFaviconRequest = req.url.includes('favicon.ico');
+app.get("/pallete/:color", function (req, res) {
+    const colorParam = req.params.color;
+    const isFaviconRequest = req.url.includes('favicon.ico');
 
-//     if (colorParam && !isFaviconRequest) {
-//         if (req.user) {
-//             User.findOne({ username: req.user.username }).then(user => {
-//                 let foundColor = user.colors.filter(color => { return color.color == "#" + req.params.color });
-//                 foundColor[0].locked = true;
-//                 user.save().then(() => { res.redirect("/") });
-//             })
-//         }
-//     }
-// })
+    if (colorParam && !isFaviconRequest) {
+        if (req.user) {
+            User.findOne({ username: req.user.username }).then(user => {
+                let foundColor = user.colors.filter(color => { return color.color == "#" + req.params.color });
+                foundColor[0].locked = true;
+                user.save().then(() => { res.redirect("/pallete") });
+            })
+        }
+    }
+})
 
 // app.get("/", function (req, res) {
 //     console.log(req.user);
