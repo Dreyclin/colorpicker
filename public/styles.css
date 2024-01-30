@@ -77,3 +77,8 @@ img {
     top: 5%;
     left: 92%;
 }
+
+.centered {
+    padding-top: 200px;
+    text-align: center;
+}
