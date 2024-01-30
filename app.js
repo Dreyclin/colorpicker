@@ -1,11 +1,13 @@
+require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
 const passport = require("passport");
 const passportLocalMongoose = require("passport-local-mongoose");
 const session = require("express-session");
+const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const findOrCreate = require('mongoose-findorcreate');
 
 mongoose.connect("mongodb://localhost:27017/palleteDB");
 
@@ -14,7 +16,7 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use(session({
-    secret: "good secret anyway",
+    secret: process.env.CLIENT_SECRET,
     resave: false,
     saveUninitialized: true,
 }))
@@ -24,11 +26,7 @@ app.use(passport.session());
 
 app.set("view engine", "ejs");
 
-const lockedSrc = "img/secured-lock.png";
-const unlockedSrc = "img/padlock-unlock.png";
 const colorsNum = 6;
-const saltRounds = 10;
-let currentUser = "";
 
 
 const itemSchema = new mongoose.Schema({
@@ -38,37 +36,50 @@ const itemSchema = new mongoose.Schema({
 
 const userSchema = new mongoose.Schema({
     username: String,
+    googleId: String,
     password: String,
     colors: [itemSchema]
 })
 
 userSchema.plugin(passportLocalMongoose);
+userSchema.plugin(findOrCreate);
+
 
 itemSchema.path("locked").default(false);
 
-const Item = mongoose.model("Item", itemSchema);
+
 const User = mongoose.model("User", userSchema);
 
 passport.use(User.createStrategy());
 
-// passport.serializeUser(function (user, cb) {
-//     process.nextTick(function () {
-//         return cb(null, {
-//             id: user.id,
-//             username: user.username,
-//             picture: user.picture
-//         });
-//     });
-// });
+passport.use(new GoogleStrategy({
+    clientID: process.env.CLIENT_ID,
+    clientSecret: process.env.CLIENT_SECRET,
+    callbackURL: "http://localhost:3000/auth/google/pallete"
+  },
+  function(accessToken, refreshToken, profile, cb) {
+    User.findOrCreate({ googleId: profile.id, username: profile.displayName }, function (err, user) {
+      return cb(err, user);
+    });
+  }
+));
 
-// passport.deserializeUser(function (user, cb) {
-//     process.nextTick(function () {
-//         return cb(null, user);
-//     });
-// });
+passport.serializeUser(function (user, cb) {
+    process.nextTick(function () {
+        return cb(null, {
+            id: user.id,
+            username: user.username,
+            picture: user.picture
+        });
+    });
+});
 
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
+passport.deserializeUser(function (user, cb) {
+    process.nextTick(function () {
+        return cb(null, user);
+    });
+});
+
 
 app.get("/", function (req, res) {
     res.render("home");
@@ -114,7 +125,6 @@ app.post("/login", function (req, res) {
 })
 
 app.get("/pallete", function (req, res) {
-    console.log(req.user);
     if (req.isAuthenticated()) {
         User.findOne({ username: req.user.username }).then((user) => {
             if (user.colors.length > 0) {
@@ -130,7 +140,7 @@ app.get("/pallete", function (req, res) {
                     user.colors.push({ color: randomColor(), locked: false });
                 }
                 user.save();
-                res.render("pallete", { colors: user.colors, isLogged: req.user, name: req.user.username })
+                res.render("pallete", { colors: user.colors, name: req.user.username })
             }
         })
     } else {
@@ -156,84 +166,20 @@ app.get("/pallete/:color", function (req, res) {
         if (req.user) {
             User.findOne({ username: req.user.username }).then(user => {
                 let foundColor = user.colors.filter(color => { return color.color == "#" + req.params.color });
-                foundColor[0].locked = true;
+                foundColor[0].locked = !foundColor[0].locked;
                 user.save().then(() => { res.redirect("/pallete") });
             })
         }
     }
 })
 
-// app.get("/", function (req, res) {
-//     console.log(req.user);
-//     if (req.user) {
-//         User.findOne({ username: req.user.username }).then(user => {
-//             if (user.colors.length > 0) {
-//                 user.colors.forEach(color => {
-//                     if (!color.locked) {
-//                         color.color = randomColor();
-//                     }
-//                 })
-//                 user.save();
-//                 res.render("index", { colors: user.colors, isLogged: req.user, name: req.user.username })
-//             } else {
-//                 for (let i = 0; i < colorsNum; i++) {
-//                     user.colors.push({ color: randomColor(), locked: false });
-//                 }
-//                 user.save();
-//                 res.render("index", { colors: user.colors, isLogged: req.user, name: req.user.username })
-//             }
-//         })
-//     } else {
-//         Item.find({}).then((items) => {
-//             items.forEach(item => {
-//                 if (!item.locked) {
-//                     item.color = randomColor();
-//                     item.save();
-//                 }
-//             })
-//             res.render("index", { colors: items, isLogged: req.user, name: "" });
-//         })
-//     }
+app.get("/auth/google", passport.authenticate("google", { scope: ["profile"] }))
 
-// })
-
-
-
-// app.post("/register", function (req, res) {
-//     User.register({ username: req.body.name }, req.body.password, function (err, user) {
-//         if (err) {
-//             console.log(err);
-//             res.redirect("/");
-//         } else {
-//             passport.authenticate("local")(req, res, function () {
-//                 //currentUser = req.body.name
-//                 res.redirect("/");
-//             })
-//         }
-//     })
-
-// })
-
-// app.post("/login", passport.authenticate("local", {
-//     successRedirect: "/",
-//     failureRedirect: "/failure",
-// })
-// User.findOne({ username: req.body.name }).then((user) => {
-//     bcrypt.compare(req.body.password, user.password, function (err, result) {
-//         if (result) {
-//             currentUser = user.username;
-//             res.redirect("/");
-//         }
-//     })
-// })
-
-
-// )
-
-// app.post("/logout", function (req, res) {
-//     //currentUser = "";
-//     req.logout(() => { res.redirect("/") });
-// })
+app.get("/auth/google/pallete",
+    passport.authenticate("google", { failureRedirect: "/login" }),
+    function (req, res) {
+        res.redirect("/pallete");
+    });
 
 function randomColor() {
     const r = Math.floor(Math.random() * 256);
