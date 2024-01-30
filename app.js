@@ -138,6 +138,16 @@ app.get("/pallete", function (req, res) {
     }
 })
 
+app.get("/logout", function(req, res) {
+    req.logout(function(err) {
+        if (err) {
+            console.log(err);
+        } else {
+            res.redirect("/");
+        }
+    });
+})
+
 // app.get("pallete/:color", function (req, res) {
 //     const colorParam = req.params.color;
 //     const isFaviconRequest = req.url.includes('favicon.ico');
